@@ -27,38 +27,41 @@ void    quote_args(t_args *args, char *str, char quote)
     int close;
 
     close = 1;
+    args.i++;
     while (str[args->i != quote] && str[args->i] != '\0')
         args->i++;
     if (str[args->i] == '\0')
         close = 0;
-    while ((str[args->i] == ' ' || str[args->i] == '\0') 
-        && is_special(str[args->i]))
+    while ((!(is_space(str[args->i]) || str[args->i] == '\0') || close)
+        && !is_special(str[args->i]))
     {
         if (str[args->i] == quote)
             close = !close;
-        else if (!close && is_special(str[args->i]))
-            args->size++;
         args->i++;
     }
 	while (is_space(input->line[input->i]))
 		args->i++;
 	args->size++;
 }
-
+//argüman sayısı bulma
 void    get_quote_size(t_args *args, char *str)
 {
     int     close;
     char    quote;
-    //while içine almayı unutma
-    if (str[args->i] == '"' || str[args->i] == '\'')
-        quote_args(args, str, str[args->i++]);
-    else
-    {
 
+    while (str[args->i])
+    {
+        if (str[args->i] == '"' || str[args->i] == '\'')
+            quote_args(args, str, str[args->i++]);
+        else
+        {
+            printf("get_quote_size_hatası\n");
+            return;
+        }
     }
 }
-
-void    get_quote_args(t_args *args, char *str, char quote)
+//argumanları almak için
+void    get_is_quote(t_args *args, char *str, char quote)
 {
     int     close;
     int     mv;
@@ -70,33 +73,71 @@ void    get_quote_args(t_args *args, char *str, char quote)
         mv++;
     if (str[args->i + mv] == '\0')
         close = 0;
-    while ((str[args->i + mv] == ' ' || str[args->i + mv] == '\0') 
-            && is_special(str[args->i + mv]))
+    while ((!(is_space(str[args->i]) || str[args->i] == '\0') || close) 
+            && !is_special(str[args->i + mv]))
     {
         if (str[args->i + mv] == quote)
             close = !close;
         mv++;
     }
-    args->args[args->wc] = ft_substr(str, args->i - 1, mv + 1);
+    args->args[args->wc++] = ft_substr(str, args->i - 1, mv + 1);
 	while (is_space(input->line[input->i + k]) == 1)
 		mv++;
 	args->i += mv;
-	args->wc++;
 }
 
-int    quotes(t_args *args,char *str)
+void    get_is_not_quote(t_args *arg, char *str)
+{
+    return ;
+}
+
+void    get_special_args(t_args *args, char *str)
+{
+    int     mv;
+    char    sp_char;
+
+    mv = 0;
+    args->i++;
+    sp_char = str[args->i - 1];
+    while (!is_space(str[args->i + mv]) || str[args->i + mv] != '\0')
+    {
+        if (mv != 0 || str[args->i + mv] != sp_char || 
+            (isnt_redirect(str[args->i + mv])))
+        {
+            break;
+        }
+        else
+            mv++;
+    }
+    args->args[args->wc++] == ft_substr(str, sp_char, mv + 1);
+    while (is_space(str[args->i + mv]))
+        mv++;
+    args->i += mv;
+}
+
+void    res_var(t_args *args)
+{
+    args->i = 0;
+}
+
+int    quotes(t_args *args, char *str)
 {
     if(!quotes_counter(str))
         return (-1);
     get_quote_size(args, str);
+    res_var(args);
     while (str[args->i])
     {
         if (str[args->i] == '"' || str[args->i] == '\'')
-            get_quote_args(args, str, str[args->i]);
+            get_is_quote(args, str, str[args->i]);
+        else if (is_special(str[args->i]))
+            get_special_args(args, str);
         else
-        {
-            break;
-        }
+            printf("daha yapılmadi\n");    
+        //get_is_not_quote(args, str[args->i]);
     }
+    printf("%s\n", args->args[0]);
+    printf("%d\n", args->size);
+    exit(1);
     return (1);
 }

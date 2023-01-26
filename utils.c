@@ -10,6 +10,27 @@ size_t  ft_strlen(const char *str)
     return (i);
 }
 
+int	is_space(char c)
+{
+	if (c == ' ')
+		return (1);
+	return (0);
+}
+
+int	isnt_redirect(char c)
+{
+	if (c != '>' && c != '<')
+		return (1);
+	return (0);
+}
+
+int	is_special(char c)
+{
+	if (c == '|' || c == '<' || c == '>')
+		return (1);
+	return (0);
+}
+
 char	*ft_strjoin(char const *s1, char const *s2)
 {
 	char	*new;

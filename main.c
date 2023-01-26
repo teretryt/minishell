@@ -92,13 +92,13 @@ void    exit_shell(t_shell *shell)
 
 void    parse(t_shell *shell, t_args *args)
 {
-    shell->parsed = ft_split(shell->readed_line, ' ');
-    shell->is_command = quotes(args, shell->parsed[0]);
-    if (shell->is_command == -1)
+    //shell->parsed = ft_split(shell->readed_line, ' ');
+    shell->is_command = quotes(args, shell->readed_line);
+    /* if (shell->is_command == -1)
     {
-        shell->key_word = -2;
+        shell->key_word = -2;s
         return;
-    }
+    } */
     if (strcmp(shell->parsed[0], "exit") == 0)
         shell->key_word = EXİT;
     else if (strcmp(shell->parsed[0], "pwd") == 0)

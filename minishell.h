@@ -27,8 +27,7 @@ typedef struct s_args
 {
     int     i;
     int     size;
-    int     start_q;
-    int     end_q;
+    int     wc;
     char    **args;
 } t_args;
 
@@ -61,7 +60,11 @@ void    update_env(char *keyval, int state);
 void    get_env(char *str);
 int     quotes(t_args *args, char *str);
 int     quotes_counter(char *str);
-void    get_quote_args(t_args *arg, char *str);
+void    quote_args(t_args *args, char *str, char quote);
+void    get_quote_size(t_args *args, char *str);
+void    get_is_quote(t_args *arg, char *str);
+void    get_is_not_quote(t_args *arg, char *str);
+void    get_special_args(t_args *arg, char *str);
 void    shell_export(t_shell *shell);
 void    shell_unset(t_shell *shell);
 void    update_env_pwds(char *old_dir);
