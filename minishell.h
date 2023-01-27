@@ -62,7 +62,7 @@ int     quotes(t_args *args, char *str);
 int     quotes_counter(char *str);
 void    quote_args(t_args *args, char *str, char quote);
 void    get_quote_size(t_args *args, char *str);
-void    get_is_quote(t_args *arg, char *str);
+void    get_is_quote(t_args *args, char *str, char quote);
 void    get_is_not_quote(t_args *arg, char *str);
 void    get_special_args(t_args *arg, char *str);
 void    shell_export(t_shell *shell);
@@ -70,8 +70,14 @@ void    shell_unset(t_shell *shell);
 void    update_env_pwds(char *old_dir);
 void    handler(int sig);
 void    handler2(int sig);
-
-
+int	    is_space(char c);
+int	    is_special(char c);
+int	    isnt_redirect(char c);
+void    init_args(t_args *args);
+char	*ft_substr(char const *s, unsigned int start, size_t len);
+size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
+void	quote_out_util(t_args *args, char *str, int *mv, int *close, char *mark);
+int	is_space_or_null(char c);
 
 
 

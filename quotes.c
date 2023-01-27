@@ -27,19 +27,19 @@ void    quote_args(t_args *args, char *str, char quote)
     int close;
 
     close = 1;
-    args.i++;
+    args->i++;
     while (str[args->i != quote] && str[args->i] != '\0')
         args->i++;
     if (str[args->i] == '\0')
         close = 0;
-    while ((!(is_space(str[args->i]) || str[args->i] == '\0') || close)
+    while (((is_space(str[args->i]) || str[args->i] == '\0') == 0 || close)
         && !is_special(str[args->i]))
     {
         if (str[args->i] == quote)
             close = !close;
         args->i++;
     }
-	while (is_space(input->line[input->i]))
+	while (is_space(str[args->i]))
 		args->i++;
 	args->size++;
 }
@@ -73,22 +73,54 @@ void    get_is_quote(t_args *args, char *str, char quote)
         mv++;
     if (str[args->i + mv] == '\0')
         close = 0;
-    while ((!(is_space(str[args->i]) || str[args->i] == '\0') || close) 
-            && !is_special(str[args->i + mv]))
+    while ((is_space_or_null(str[args->i + mv]) == 0 || close) 
+            && is_special(str[args->i + mv]) == 0)
     {
         if (str[args->i + mv] == quote)
             close = !close;
         mv++;
     }
-    args->args[args->wc++] = ft_substr(str, args->i - 1, mv + 1);
-	while (is_space(input->line[input->i + k]) == 1)
+    args->args[args->wc] = ft_substr(str, args->i - 1, mv + 1);
+    while (is_space(str[args->i + mv]) == 1)
 		mv++;
 	args->i += mv;
+    args->wc++;
 }
 
-void    get_is_not_quote(t_args *arg, char *str)
+void	quote_out_util(t_args *args, char *str, int *mv, int *close, char *mark)
 {
-    return ;
+	if ((str[args->i + *mv] == '"'
+			|| str[args->i + *mv] == '\'') && !(*mark))
+	{
+		*mark = str[args->i + *mv];
+		*close = !(*close);
+	}
+	else if (mark && str[args->i + *mv] == *mark)
+	{
+		*close = !(*close);
+		*mark = 0;
+	}
+	(*mv)++;
+}
+
+void    get_is_not_quote(t_args *args, char *str)
+{
+    int		mv;
+	int		close;
+	char	mark;
+
+	close = 0;
+	mv = 0;
+	mark = 0;
+	while (is_space(str[args->i]) == 1)
+		args->i++;
+	while ((is_space_or_null(str[args->i + mv]) == 0 || close)
+		&& (is_special(str[args->i + mv]) == 0 || close))
+		quote_out_util(args, str, &mv, &close, &mark);
+	args->args[args->wc++] = ft_substr(str, args->i, mv);
+	while (is_space(str[args->i + mv]) == 1)
+		mv++;
+	args->i += mv;
 }
 
 void    get_special_args(t_args *args, char *str)
@@ -99,7 +131,7 @@ void    get_special_args(t_args *args, char *str)
     mv = 0;
     args->i++;
     sp_char = str[args->i - 1];
-    while (!is_space(str[args->i + mv]) || str[args->i + mv] != '\0')
+    while (!is_space(str[args->i + mv]) || str[args->i + mv] == '\0')
     {
         if (mv != 0 || str[args->i + mv] != sp_char || 
             (isnt_redirect(str[args->i + mv])))
@@ -125,7 +157,10 @@ int    quotes(t_args *args, char *str)
     if(!quotes_counter(str))
         return (-1);
     get_quote_size(args, str);
+    args->args = (char **)malloc(sizeof(char *) * args->size + 1);
+    printf("sayac: %d\n", args->i);
     res_var(args);
+    printf("sayac: %d\n", args->i);
     while (str[args->i])
     {
         if (str[args->i] == '"' || str[args->i] == '\'')
@@ -133,11 +168,11 @@ int    quotes(t_args *args, char *str)
         else if (is_special(str[args->i]))
             get_special_args(args, str);
         else
-            printf("daha yapılmadi\n");    
-        //get_is_not_quote(args, str[args->i]);
+        {
+            get_is_not_quote(args, str);
+        }
     }
     printf("%s\n", args->args[0]);
-    printf("%d\n", args->size);
     exit(1);
     return (1);
 }
